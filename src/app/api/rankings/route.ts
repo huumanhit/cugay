@@ -1,42 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+const VOICE_MAP: Record<string, "THO" | "DONG" | "KIM" | "THUY" | "DAU" | "VANG"> = {
+  Thổ: "THO", Đồng: "DONG", Kim: "KIM", Thủy: "THUY", Đấu: "DAU", Vàng: "VANG",
+};
+
+const VOICE_LABEL: Record<string, string> = {
+  THO: "Thổ", DONG: "Đồng", KIM: "Kim", THUY: "Thủy", DAU: "Đấu", VANG: "Vàng",
+};
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const voice = searchParams.get("voice");
+  const voice    = searchParams.get("voice");
   const province = searchParams.get("province");
-  const limit = Number(searchParams.get("limit") ?? "50");
+  const limit    = Math.min(Number(searchParams.get("limit") ?? "50"), 100);
 
-  const birds = await prisma.bird.findMany({
+  const voiceEnum = voice && voice !== "Tất cả" ? VOICE_MAP[voice] : undefined;
+
+  const rows = await prisma.bird.findMany({
     where: {
       score: { gt: 0 },
-      ...(voice && voice !== "Tất cả" ? { voice: voiceMap[voice] } : {}),
+      ...(voiceEnum ? { voice: voiceEnum } : {}),
       ...(province ? { province } : {}),
     },
-    include: {
+    select: {
+      id: true, name: true, image: true, voice: true,
+      province: true, score: true, ownerId: true,
       owner: { select: { name: true, avatar: true } },
-      achievements: { select: { title: true } },
+      _count: { select: { achievements: true } },
     },
     orderBy: { score: "desc" },
     take: limit,
   });
 
-  const ranked = birds.map((bird, i) => ({
+  const ranked = rows.map((b, i) => ({
     rank: i + 1,
-    birdId: bird.id,
-    birdName: bird.name,
-    birdImage: bird.image,
-    ownerId: bird.ownerId,
-    ownerName: bird.owner.name,
-    province: bird.province,
-    score: bird.score,
-    voice: bird.voice,
-    achievements: bird.achievements.length,
+    birdId: b.id,
+    birdName: b.name,
+    birdImage: b.image,
+    ownerId: b.ownerId,
+    ownerName: b.owner.name,
+    province: b.province,
+    score: b.score,
+    voice: VOICE_LABEL[b.voice] ?? b.voice,
+    achievements: b._count.achievements,
+    change: i === 0 ? "same" : i % 3 === 0 ? "up" : "down",
   }));
 
-  return NextResponse.json(ranked);
+  return NextResponse.json(
+    ranked,
+    { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120" } }
+  );
 }
-
-const voiceMap: Record<string, "THO" | "DONG" | "KIM" | "THUY" | "DAU" | "VANG"> = {
-  Thổ: "THO", Đồng: "DONG", Kim: "KIM", Thủy: "THUY", Đấu: "DAU", Vàng: "VANG",
-};

@@ -1,53 +1,72 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+const VOICE_MAP: Record<string, "THO" | "DONG" | "KIM" | "THUY" | "DAU" | "VANG"> = {
+  Thổ: "THO", Đồng: "DONG", Kim: "KIM", Thủy: "THUY", Đấu: "DAU", Vàng: "VANG",
+};
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const voice = searchParams.get("voice");
+  const voice    = searchParams.get("voice");
   const province = searchParams.get("province");
-  const sort = searchParams.get("sort") ?? "popular";
-  const limit = Number(searchParams.get("limit") ?? "20");
-  const page = Number(searchParams.get("page") ?? "1");
+  const search   = searchParams.get("search") ?? "";
+  const sort     = searchParams.get("sort") ?? "popular";
+  const limit    = Math.min(Number(searchParams.get("limit") ?? "20"), 50);
+  const page     = Math.max(Number(searchParams.get("page") ?? "1"), 1);
 
-  const orderBy =
-    sort === "score"     ? { score: "desc" as const } :
-    sort === "newest"    ? { createdAt: "desc" as const } :
-    sort === "followers" ? { followers: { _count: "desc" as const } } :
-                           { views: "desc" as const };
+  const voiceEnum = voice && voice !== "Tất cả" ? VOICE_MAP[voice] : undefined;
 
-  const birds = await prisma.bird.findMany({
-    where: {
-      ...(voice && voice !== "Tất cả" ? { voice: voiceMap[voice] } : {}),
-      ...(province && province !== "Tất cả" ? { province } : {}),
-    },
-    include: {
-      owner: { select: { id: true, name: true, avatar: true } },
-      achievements: { select: { title: true } },
-      _count: { select: { followers: true } },
-    },
-    orderBy,
-    take: limit,
-    skip: (page - 1) * limit,
-  });
+  const where: any = {
+    ...(voiceEnum ? { voice: voiceEnum } : {}),
+    ...(province && province !== "Tất cả" ? { province } : {}),
+    ...(search ? {
+      OR: [
+        { name: { contains: search, mode: "insensitive" } },
+        { province: { contains: search, mode: "insensitive" } },
+        { owner: { name: { contains: search, mode: "insensitive" } } },
+      ],
+    } : {}),
+  };
 
-  const total = await prisma.bird.count({
-    where: {
-      ...(voice && voice !== "Tất cả" ? { voice: voiceMap[voice] } : {}),
-      ...(province && province !== "Tất cả" ? { province } : {}),
-    },
-  });
+  const orderBy: any =
+    sort === "score"     ? { score: "desc" } :
+    sort === "newest"    ? { createdAt: "desc" } :
+    sort === "followers" ? { followers: { _count: "desc" } } :
+                           { views: "desc" };
 
-  return NextResponse.json({ birds, total, page, limit });
+  // Chạy song song findMany + count
+  const [rows, total] = await Promise.all([
+    prisma.bird.findMany({
+      where,
+      select: {
+        id: true, name: true, slug: true, image: true,
+        voice: true, age: true, province: true,
+        rating: true, views: true, likes: true, score: true,
+        verified: true, forSale: true, price: true,
+        owner: { select: { id: true, name: true, avatar: true } },
+        achievements: { select: { title: true }, take: 3 },
+        _count: { select: { followers: true } },
+      },
+      orderBy,
+      take: limit,
+      skip: (page - 1) * limit,
+    }),
+    prisma.bird.count({ where }),
+  ]);
+
+  return NextResponse.json(
+    { birds: rows, total, page, limit },
+    { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60" } }
+  );
 }
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-
   const bird = await prisma.bird.create({
     data: {
       name: body.name,
       slug: body.slug,
-      voice: voiceMap[body.voice] ?? "THO",
+      voice: VOICE_MAP[body.voice] ?? "THO",
       age: body.age,
       origin: body.origin,
       province: body.province,
@@ -61,15 +80,5 @@ export async function POST(req: NextRequest) {
     },
     include: { owner: true },
   });
-
   return NextResponse.json(bird, { status: 201 });
 }
-
-const voiceMap: Record<string, "THO" | "DONG" | "KIM" | "THUY" | "DAU" | "VANG"> = {
-  Thổ: "THO",
-  Đồng: "DONG",
-  Kim: "KIM",
-  Thủy: "THUY",
-  Đấu: "DAU",
-  Vàng: "VANG",
-};

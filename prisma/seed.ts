@@ -77,14 +77,20 @@ async function main() {
     }),
   ]);
 
-  // Ảnh cu gáy thật - ảnh do chủ nhân cung cấp, lưu tại public/birds/
+  // Ảnh cu gáy thật - lưu trên Cloudinary CDN
   const CG = [
-    "/birds/bird-01.jpg", "/birds/bird-02.jpg",
-    "/birds/bird-03.jpg", "/birds/bird-04.jpg",
-    "/birds/bird-05.jpg", "/birds/bird-06.jpg",
-    "/birds/bird-07.jpg", "/birds/bird-08.jpg",
-    "/birds/bird-09.jpg", "/birds/bird-10.jpg",
-    "/birds/bird-11.jpg", "/birds/bird-12.jpg",
+    "https://res.cloudinary.com/dl51jugpu/image/upload/v1780299840/cugay/birds/bird-01.jpg",
+    "https://res.cloudinary.com/dl51jugpu/image/upload/v1780299841/cugay/birds/bird-02.jpg",
+    "https://res.cloudinary.com/dl51jugpu/image/upload/v1780299842/cugay/birds/bird-03.jpg",
+    "https://res.cloudinary.com/dl51jugpu/image/upload/v1780299843/cugay/birds/bird-04.jpg",
+    "https://res.cloudinary.com/dl51jugpu/image/upload/v1780299844/cugay/birds/bird-05.jpg",
+    "https://res.cloudinary.com/dl51jugpu/image/upload/v1780299845/cugay/birds/bird-06.jpg",
+    "https://res.cloudinary.com/dl51jugpu/image/upload/v1780299846/cugay/birds/bird-07.jpg",
+    "https://res.cloudinary.com/dl51jugpu/image/upload/v1780299846/cugay/birds/bird-08.jpg",
+    "https://res.cloudinary.com/dl51jugpu/image/upload/v1780299847/cugay/birds/bird-09.jpg",
+    "https://res.cloudinary.com/dl51jugpu/image/upload/v1780299848/cugay/birds/bird-10.jpg",
+    "https://res.cloudinary.com/dl51jugpu/image/upload/v1780299849/cugay/birds/bird-11.jpg",
+    "https://res.cloudinary.com/dl51jugpu/image/upload/v1780299849/cugay/birds/bird-12.jpg",
   ];
 
   // Create birds

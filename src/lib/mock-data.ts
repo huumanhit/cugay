@@ -9,10 +9,9 @@ import type {
   Event,
 } from "@/types";
 
-// Ảnh cu gáy thật - ảnh của chủ nhân cung cấp
-// Lưu tại: public/birds/bird-01.jpg đến bird-12.jpg
+// Ảnh cu gáy thật - 14 ảnh do chủ nhân cung cấp, sắp xếp theo chất lượng
 const BIRD_IMAGES = [
-  "/birds/bird-01.jpg",
+  "/birds/bird-01.jpg", // 431KB - lớn nhất, đẹp nhất
   "/birds/bird-02.jpg",
   "/birds/bird-03.jpg",
   "/birds/bird-04.jpg",
@@ -24,6 +23,8 @@ const BIRD_IMAGES = [
   "/birds/bird-10.jpg",
   "/birds/bird-11.jpg",
   "/birds/bird-12.jpg",
+  "/birds/bird-13.jpg",
+  "/birds/bird-14.jpg",
 ];
 
 const AVATARS = [
@@ -50,7 +51,7 @@ export const MOCK_BIRDS: Bird[] = [
     origin: "Cần Thơ",
     province: "Cần Thơ",
     image: BIRD_IMAGES[0],
-    gallery: [BIRD_IMAGES[0], BIRD_IMAGES[1]],
+    gallery: [BIRD_IMAGES[0], BIRD_IMAGES[1], BIRD_IMAGES[12], BIRD_IMAGES[13]],
     achievements: ["Vô địch miền Tây 2023", "Á quân toàn quốc 2022", "Top 3 giải Xuân 2024"],
     description: "Dũng Sĩ Tây Đô là một trong những chiến binh cu gáy xuất sắc nhất miền Tây. Giọng thổ đặc trưng, mạnh mẽ và trường hơi, đã qua nhiều kỳ thi đấu cấp khu vực và toàn quốc.",
     rating: 4.9,
