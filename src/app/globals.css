@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-be-vietnam: 'Be Vietnam Pro', system-ui, sans-serif;
+  --primary: #2F9E44;
+  --secondary: #74C69D;
+  --background: #F8F9FA;
+  --card: #FFFFFF;
+  --text: #212529;
+  --border: #E9ECEF;
+  --muted: #868E96;
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-be-vietnam);
+  background-color: var(--background);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #DEE2E6;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ADB5BD;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .card-shadow {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.04);
+  }
+  .card-shadow-hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10), 0 0 1px rgba(0,0,0,0.04);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-500 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-primary-600 transition-all duration-200 active:scale-95;
+  }
+  .btn-secondary {
+    @apply bg-white text-primary-500 font-semibold px-5 py-2.5 rounded-xl border border-border hover:bg-accent transition-all duration-200 active:scale-95;
+  }
+  .card-base {
+    @apply bg-card rounded-2xl border border-border card-shadow;
+  }
+}
