@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useCallback, useEffect, useRef } from "react";
+import { useState, useTransition, useCallback, useRef } from "react";
 import { Search, Grid3X3 } from "lucide-react";
 import BirdCard from "@/components/birds/BirdCard";
 import type { Bird } from "@/types";
@@ -125,7 +125,7 @@ export default function BirdListClient({ initialBirds, initialTotal, initialSear
         </div>
       ) : birds.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {birds.map((bird) => <BirdCard key={bird.id} bird={bird} />)}
+          {birds.map((bird, i) => <BirdCard key={bird.id} bird={bird} priority={i < 3} />)}
         </div>
       ) : (
         <div className="text-center py-20">

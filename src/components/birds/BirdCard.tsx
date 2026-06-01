@@ -8,16 +8,23 @@ import type { Bird } from "@/types";
 interface BirdCardProps {
   bird: Bird;
   compact?: boolean;
+  priority?: boolean;
 }
 
-export default function BirdCard({ bird, compact = false }: BirdCardProps) {
+export default function BirdCard({ bird, compact = false, priority = false }: BirdCardProps) {
   return (
     <Link href={`/ho-so-chim/${bird.id}`} className="block group">
       <div className="bg-white rounded-2xl border border-border shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden">
 
         {/* Image */}
         <div className="relative overflow-hidden aspect-[4/3]">
-          <BirdImage src={bird.image} alt={bird.name} fill />
+          <BirdImage
+            src={bird.image}
+            alt={bird.name}
+            fill
+            priority={priority}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+          />
 
           {/* Badges */}
           <div className="absolute top-3 left-3 flex gap-1.5 z-20">
