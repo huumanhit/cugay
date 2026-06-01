@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Play, CheckCircle2 } from "lucide-react";
 
 const HERO_IMAGE =
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Streptopelia_chinensis_-_Ang_Mo_Kio.jpg/800px-Streptopelia_chinensis_-_Ang_Mo_Kio.jpg";
+  "https://inaturalist-open-data.s3.amazonaws.com/photos/10857163/medium.jpg";
 
 export default function HeroSection() {
   return (

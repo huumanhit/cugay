@@ -3,13 +3,14 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   images: {
+    // Cho phép load ảnh từ bất kỳ domain nào (tắt whitelist)
     remotePatterns: [
-      { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "upload.wikimedia.org" },
-      { protocol: "https", hostname: "live.staticflickr.com" },
-      { protocol: "https", hostname: "picsum.photos" },
-      { protocol: "https", hostname: "i.pravatar.cc" },
+      { protocol: "https", hostname: "**" },
+      { protocol: "http", hostname: "**" },
     ],
+    // Tắt server-side optimization cho external images
+    // (tránh bị block bởi Wikimedia, iNaturalist, Flickr, v.v.)
+    unoptimized: true,
   },
   turbopack: {
     root: path.resolve(__dirname),

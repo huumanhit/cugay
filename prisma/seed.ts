@@ -77,14 +77,14 @@ async function main() {
     }),
   ]);
 
-  // Ảnh cu gáy thật từ Wikimedia Commons
+  // Ảnh cu gáy từ iNaturalist (S3 public, không bị chặn hotlink)
   const CG = [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Streptopelia_chinensis_-_Ang_Mo_Kio.jpg/800px-Streptopelia_chinensis_-_Ang_Mo_Kio.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Spotted_dove_on_the_grass_-_Flickr_-_Lip_Kee.jpg/800px-Spotted_dove_on_the_grass_-_Flickr_-_Lip_Kee.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Spotted_Dove_at_Tennoji_Park.JPG/800px-Spotted_Dove_at_Tennoji_Park.JPG",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Spotted_dove_%28Spilopelia_chinensis%29_Photograph_By_Shantanu_Kuveskar.jpg/800px-Spotted_dove_%28Spilopelia_chinensis%29_Photograph_By_Shantanu_Kuveskar.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Spotted_Dove_I_IMG_8493.jpg/800px-Spotted_Dove_I_IMG_8493.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Spotted_dove_%28Spilopelia_chinensis_tigrina%29.jpg/800px-Spotted_dove_%28Spilopelia_chinensis_tigrina%29.jpg",
+    "https://inaturalist-open-data.s3.amazonaws.com/photos/10857163/medium.jpg",
+    "https://inaturalist-open-data.s3.amazonaws.com/photos/12528800/medium.jpg",
+    "https://inaturalist-open-data.s3.amazonaws.com/photos/16510528/medium.jpg",
+    "https://inaturalist-open-data.s3.amazonaws.com/photos/46381498/medium.jpg",
+    "https://inaturalist-open-data.s3.amazonaws.com/photos/55637052/medium.jpg",
+    "https://inaturalist-open-data.s3.amazonaws.com/photos/71924551/medium.jpg",
   ];
 
   // Create birds
