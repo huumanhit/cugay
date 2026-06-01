@@ -1,0 +1,289 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── USERS ───────────────────────────────────────────────────────────────────
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  avatar      String?
+  phone       String?
+  bio         String?
+  province    String?
+  verified    Boolean  @default(false)
+  isPro       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  birds       Bird[]
+  listings    MarketplaceListing[]
+  reviews     Review[]
+  following   Follow[]   @relation("Follower")
+  followers   Follow[]   @relation("Following")
+  clubs       ClubMember[]
+
+  @@map("users")
+}
+
+// ─── BIRDS ───────────────────────────────────────────────────────────────────
+
+model Bird {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  voice       VoiceType
+  age         Int
+  origin      String
+  province    String
+  image       String
+  gallery     String[]
+  description String?
+  weight      String?
+  color       String?
+  lineage     String?
+  forSale     Boolean   @default(false)
+  price       Float?
+  verified    Boolean   @default(false)
+  rating      Float     @default(0)
+  views       Int       @default(0)
+  likes       Int       @default(0)
+  score       Int       @default(0)
+  rank        Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  ownerId     String
+  owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  achievements   Achievement[]
+  timelineEvents TimelineEvent[]
+  listing        MarketplaceListing?
+  reviews        Review[]
+  followers      BirdFollow[]
+
+  @@index([ownerId])
+  @@index([voice])
+  @@index([province])
+  @@index([score(sort: Desc)])
+  @@map("birds")
+}
+
+enum VoiceType {
+  THO
+  DONG
+  KIM
+  THUY
+  DAU
+  VANG
+
+  @@map("voice_type")
+}
+
+model Achievement {
+  id        String   @id @default(cuid())
+  title     String
+  year      Int?
+  birdId    String
+  bird      Bird     @relation(fields: [birdId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([birdId])
+  @@map("achievements")
+}
+
+// ─── TIMELINE ─────────────────────────────────────────────────────────────────
+
+model TimelineEvent {
+  id          String       @id @default(cuid())
+  birdId      String
+  bird        Bird         @relation(fields: [birdId], references: [id], onDelete: Cascade)
+  date        DateTime
+  title       String
+  description String
+  type        TimelineType
+  image       String?
+  videoUrl    String?
+  createdAt   DateTime     @default(now())
+
+  @@index([birdId])
+  @@index([date(sort: Desc)])
+  @@map("timeline_events")
+}
+
+enum TimelineType {
+  MILESTONE
+  AWARD
+  HEALTH
+  TRAINING
+  OTHER
+
+  @@map("timeline_type")
+}
+
+// ─── MARKETPLACE ──────────────────────────────────────────────────────────────
+
+model MarketplaceListing {
+  id          String   @id @default(cuid())
+  birdId      String   @unique
+  bird        Bird     @relation(fields: [birdId], references: [id], onDelete: Cascade)
+  sellerId    String
+  seller      User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  price       Float
+  negotiable  Boolean  @default(false)
+  description String?
+  views       Int      @default(0)
+  active      Boolean  @default(true)
+  soldAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([sellerId])
+  @@index([active])
+  @@index([price])
+  @@index([createdAt(sort: Desc)])
+  @@map("marketplace_listings")
+}
+
+// ─── COMMUNITY ────────────────────────────────────────────────────────────────
+
+model Club {
+  id          String    @id @default(cuid())
+  name        String
+  province    String
+  description String?
+  logo        String?
+  coverImage  String?
+  verified    Boolean   @default(false)
+  foundedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  members     ClubMember[]
+  events      Event[]
+
+  @@index([province])
+  @@map("clubs")
+}
+
+model ClubMember {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clubId   String
+  club     Club     @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  role     ClubRole @default(MEMBER)
+  joinedAt DateTime @default(now())
+
+  @@unique([userId, clubId])
+  @@map("club_members")
+}
+
+enum ClubRole {
+  ADMIN
+  MODERATOR
+  MEMBER
+
+  @@map("club_role")
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  location    String
+  province    String
+  organizer   String
+  image       String?
+  eventType   EventType
+  attendees   Int       @default(0)
+  clubId      String?
+  club        Club?     @relation(fields: [clubId], references: [id])
+  createdAt   DateTime  @default(now())
+
+  @@index([date])
+  @@index([province])
+  @@map("events")
+}
+
+enum EventType {
+  COMPETITION
+  EXHIBITION
+  MEETUP
+  TRAINING
+
+  @@map("event_type")
+}
+
+// ─── NEWS ─────────────────────────────────────────────────────────────────────
+
+model NewsArticle {
+  id           String    @id @default(cuid())
+  title        String
+  slug         String    @unique
+  excerpt      String?
+  content      String
+  coverImage   String?
+  author       String
+  authorAvatar String?
+  category     String
+  readTime     Int       @default(5)
+  views        Int       @default(0)
+  published    Boolean   @default(false)
+  publishedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([published])
+  @@index([publishedAt(sort: Desc)])
+  @@map("news_articles")
+}
+
+// ─── SOCIAL ───────────────────────────────────────────────────────────────────
+
+model Review {
+  id         String   @id @default(cuid())
+  rating     Int
+  comment    String?
+  reviewerId String
+  reviewer   User     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+  birdId     String
+  bird       Bird     @relation(fields: [birdId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([reviewerId, birdId])
+  @@index([birdId])
+  @@map("reviews")
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  follower    User     @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String
+  following   User     @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model BirdFollow {
+  id        String   @id @default(cuid())
+  userId    String
+  birdId    String
+  bird      Bird     @relation(fields: [birdId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, birdId])
+  @@map("bird_follows")
+}
