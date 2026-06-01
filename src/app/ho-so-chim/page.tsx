@@ -3,29 +3,19 @@ import BirdListClient from "./BirdListClient";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Hồ sơ chim – CuGay.vn" };
-export const revalidate = 30;
+export const revalidate = 60;
 
-interface Props {
-  searchParams: Promise<{ search?: string; voice?: string; sort?: string }>;
-}
-
-export default async function BirdProfilesPage({ searchParams }: Props) {
-  const { search, voice, sort = "popular" } = await searchParams;
-
-  const { birds, total } = await getBirds({
-    search: search ?? "",
-    voice: voice !== "Tất cả" ? voice : undefined,
-    sort,
-    limit: 24,
-  });
+// Không đọc searchParams → page được cache tĩnh hoàn toàn
+export default async function BirdProfilesPage() {
+  const { birds, total } = await getBirds({ sort: "popular", limit: 50 });
 
   return (
     <BirdListClient
       initialBirds={birds}
       initialTotal={total}
-      initialSearch={search ?? ""}
-      initialVoice={voice ?? "Tất cả"}
-      initialSort={sort}
+      initialSearch=""
+      initialVoice="Tất cả"
+      initialSort="popular"
     />
   );
 }
