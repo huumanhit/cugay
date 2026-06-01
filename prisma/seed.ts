@@ -77,14 +77,14 @@ async function main() {
     }),
   ]);
 
-  // Ảnh cu gáy từ iNaturalist (S3 public, không bị chặn hotlink)
+  // Ảnh cu gáy thật - ảnh do chủ nhân cung cấp, lưu tại public/birds/
   const CG = [
-    "https://inaturalist-open-data.s3.amazonaws.com/photos/10857163/medium.jpg",
-    "https://inaturalist-open-data.s3.amazonaws.com/photos/12528800/medium.jpg",
-    "https://inaturalist-open-data.s3.amazonaws.com/photos/16510528/medium.jpg",
-    "https://inaturalist-open-data.s3.amazonaws.com/photos/46381498/medium.jpg",
-    "https://inaturalist-open-data.s3.amazonaws.com/photos/55637052/medium.jpg",
-    "https://inaturalist-open-data.s3.amazonaws.com/photos/71924551/medium.jpg",
+    "/birds/bird-01.jpg", "/birds/bird-02.jpg",
+    "/birds/bird-03.jpg", "/birds/bird-04.jpg",
+    "/birds/bird-05.jpg", "/birds/bird-06.jpg",
+    "/birds/bird-07.jpg", "/birds/bird-08.jpg",
+    "/birds/bird-09.jpg", "/birds/bird-10.jpg",
+    "/birds/bird-11.jpg", "/birds/bird-12.jpg",
   ];
 
   // Create birds

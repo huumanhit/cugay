@@ -2,8 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Play, CheckCircle2 } from "lucide-react";
 
-const HERO_IMAGE =
-  "https://inaturalist-open-data.s3.amazonaws.com/photos/10857163/medium.jpg";
+const HERO_IMAGE = "/birds/bird-12.jpg";
 
 export default function HeroSection() {
   return (
