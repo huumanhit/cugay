@@ -1,8 +1,8 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Eye, Heart, CheckCircle2, Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatNumber, getVoiceColor } from "@/lib/utils";
+import BirdImage from "./BirdImage";
 import type { Bird } from "@/types";
 
 interface BirdCardProps {
@@ -14,39 +14,35 @@ export default function BirdCard({ bird, compact = false }: BirdCardProps) {
   return (
     <Link href={`/ho-so-chim/${bird.id}`} className="block group">
       <div className="bg-white rounded-2xl border border-border shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden">
+
         {/* Image */}
         <div className="relative overflow-hidden aspect-[4/3]">
-          <Image
-            src={bird.image}
-            alt={bird.name}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-          {/* Badges overlay */}
-          <div className="absolute top-3 left-3 flex gap-1.5">
+          <BirdImage src={bird.image} alt={bird.name} fill />
+
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex gap-1.5 z-20">
             {bird.verified && (
-              <span className="bg-blue-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" />
-                Xác thực
+              <span className="bg-blue-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                <CheckCircle2 className="w-3 h-3" /> Xác thực
               </span>
             )}
             {bird.rank && bird.rank <= 3 && (
-              <span className="bg-amber-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
-                <Trophy className="w-3 h-3" />
-                Top {bird.rank}
+              <span className="bg-amber-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                <Trophy className="w-3 h-3" /> Top {bird.rank}
               </span>
             )}
           </div>
+
           {/* Voice badge */}
-          <div className="absolute top-3 right-3">
-            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${getVoiceColor(bird.voice)}`}>
+          <div className="absolute top-3 right-3 z-20">
+            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm ${getVoiceColor(bird.voice)}`}>
               {bird.voice}
             </span>
           </div>
-          {/* For sale */}
+
+          {/* For sale overlay */}
           {bird.forSale && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary-600/90 to-transparent p-3">
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary-700/90 to-transparent p-3 z-20">
               <p className="text-white text-sm font-bold">
                 {bird.price ? `${(bird.price / 1_000_000).toFixed(0)} triệu đ` : "Liên hệ"}
               </p>
