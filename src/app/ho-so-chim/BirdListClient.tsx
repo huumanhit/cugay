@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useCallback, useRef } from "react";
+import { useState, useMemo, useTransition, useRef } from "react";
 import { Search, Grid3X3 } from "lucide-react";
 import BirdCard from "@/components/birds/BirdCard";
 import type { Bird } from "@/types";
@@ -21,44 +21,66 @@ interface Props {
 }
 
 export default function BirdListClient({ initialBirds, initialTotal, initialSearch, initialVoice, initialSort }: Props) {
-  const [birds, setBirds] = useState(initialBirds);
-  const [total, setTotal] = useState(initialTotal);
+  const [allBirds, setAllBirds] = useState(initialBirds);
   const [search, setSearch] = useState(initialSearch);
   const [voice, setVoice] = useState(initialVoice);
   const [sort, setSort] = useState(initialSort);
-  const [isPending, startTransition] = useTransition();
+  const [isSearching, startTransition] = useTransition();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const fetchBirds = useCallback((overrides: Record<string, string> = {}) => {
-    const params = new URLSearchParams({
-      sort: overrides.sort ?? sort,
-      limit: "24",
-      ...(( overrides.search ?? search) ? { search: overrides.search ?? search } : {}),
-      ...((overrides.voice ?? voice) !== "Tất cả" ? { voice: overrides.voice ?? voice } : {}),
-    });
+  // Filter + sort hoàn toàn client-side — instant, không gọi API
+  const birds = useMemo(() => {
+    let result = allBirds;
 
-    startTransition(async () => {
-      const res = await fetch(`/api/birds?${params}`);
-      const data = await res.json();
-      setBirds(data.birds ?? []);
-      setTotal(data.total ?? 0);
-    });
-  }, [sort, search, voice]);
+    if (voice !== "Tất cả") {
+      result = result.filter((b) => b.voice === voice);
+    }
 
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      result = result.filter(
+        (b) =>
+          b.name.toLowerCase().includes(q) ||
+          b.province.toLowerCase().includes(q) ||
+          b.ownerName.toLowerCase().includes(q)
+      );
+    }
+
+    const sorted = [...result];
+    if (sort === "score") sorted.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+    else if (sort === "newest") sorted.sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime());
+    else sorted.sort((a, b) => b.views - a.views); // popular
+
+    return sorted;
+  }, [allBirds, voice, sort, search]);
+
+  // Chỉ gọi API khi cần tìm kiếm từ server (từ khoá không có trong dữ liệu đã tải)
   function handleSearch(val: string) {
     setSearch(val);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => fetchBirds({ search: val }), 350);
-  }
+    if (!val.trim()) return;
 
-  function handleVoice(val: string) {
-    setVoice(val);
-    fetchBirds({ voice: val });
-  }
-
-  function handleSort(val: string) {
-    setSort(val);
-    fetchBirds({ sort: val });
+    debounceRef.current = setTimeout(() => {
+      const clientMatch = allBirds.some(
+        (b) =>
+          b.name.toLowerCase().includes(val.toLowerCase()) ||
+          b.province.toLowerCase().includes(val.toLowerCase()) ||
+          b.ownerName.toLowerCase().includes(val.toLowerCase())
+      );
+      // Chỉ gọi API nếu client không có kết quả
+      if (!clientMatch) {
+        startTransition(async () => {
+          const params = new URLSearchParams({ search: val, sort, limit: "24" });
+          if (voice !== "Tất cả") params.set("voice", voice);
+          const res = await fetch(`/api/birds?${params}`);
+          const data = await res.json();
+          if (data.birds?.length) setAllBirds((prev) => {
+            const ids = new Set(prev.map((b) => b.id));
+            return [...prev, ...data.birds.filter((b: Bird) => !ids.has(b.id))];
+          });
+        });
+      }
+    }, 400);
   }
 
   return (
@@ -68,6 +90,7 @@ export default function BirdListClient({ initialBirds, initialTotal, initialSear
         <p className="text-sm text-muted mt-1">Khám phá hồ sơ cu gáy được xác thực trên toàn quốc</p>
       </div>
 
+      {/* Search & Filters */}
       <div className="bg-white rounded-2xl border border-border shadow-card p-4 mb-6">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
@@ -75,13 +98,13 @@ export default function BirdListClient({ initialBirds, initialTotal, initialSear
             <input
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Tìm kiếm theo tên chim, chủ nhân, tỉnh thành..."
+              placeholder="Tìm theo tên chim, chủ nhân, tỉnh thành..."
               className="w-full pl-9 pr-4 py-2.5 bg-accent rounded-xl text-sm border border-transparent focus:border-primary-300 focus:bg-white focus:outline-none transition-all placeholder:text-muted"
             />
           </div>
           <select
             value={sort}
-            onChange={(e) => handleSort(e.target.value)}
+            onChange={(e) => setSort(e.target.value)}
             className="border border-border rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-300 text-text-primary"
           >
             {SORT_OPTIONS.map((o) => (
@@ -89,13 +112,17 @@ export default function BirdListClient({ initialBirds, initialTotal, initialSear
             ))}
           </select>
         </div>
+
+        {/* Voice filter — instant client-side */}
         <div className="flex gap-2 mt-3 flex-wrap">
           {VOICE_FILTERS.map((v) => (
             <button
               key={v}
-              onClick={() => handleVoice(v)}
+              onClick={() => setVoice(v)}
               className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
-                voice === v ? "bg-primary-500 text-white border-primary-500" : "bg-white text-muted border-border hover:border-primary-300"
+                voice === v
+                  ? "bg-primary-500 text-white border-primary-500"
+                  : "bg-white text-muted border-border hover:border-primary-300"
               }`}
             >
               {v}
@@ -104,28 +131,22 @@ export default function BirdListClient({ initialBirds, initialTotal, initialSear
         </div>
       </div>
 
+      {/* Count */}
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-muted">
-          {isPending ? "Đang tìm..." : <><span className="font-semibold text-text-primary">{total}</span> kết quả</>}
+          {isSearching
+            ? "Đang tìm..."
+            : <><span className="font-semibold text-text-primary">{birds.length}</span> kết quả</>}
         </p>
         <Grid3X3 className="w-4 h-4 text-primary-500" />
       </div>
 
-      {isPending ? (
+      {/* Grid */}
+      {birds.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-border overflow-hidden animate-pulse">
-              <div className="aspect-[4/3] bg-accent" />
-              <div className="p-4 space-y-2">
-                <div className="h-4 bg-accent rounded w-3/4" />
-                <div className="h-3 bg-accent rounded w-1/2" />
-              </div>
-            </div>
+          {birds.map((bird, i) => (
+            <BirdCard key={bird.id} bird={bird} priority={i < 4} />
           ))}
-        </div>
-      ) : birds.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {birds.map((bird, i) => <BirdCard key={bird.id} bird={bird} priority={i < 3} />)}
         </div>
       ) : (
         <div className="text-center py-20">

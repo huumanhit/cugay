@@ -2,9 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Play, CheckCircle2 } from "lucide-react";
 
-const HERO_IMAGE = "/birds/bird-12.jpg";
+const HERO_IMAGE = "https://res.cloudinary.com/dl51jugpu/image/upload/w_900,h_1125,c_fill,f_auto,q_auto/v1780299849/cugay/birds/bird-12.jpg";
 
-export default function HeroSection() {
+export default function HeroSection({ sampleBirdId }: { sampleBirdId?: string }) {
+  const sampleHref = sampleBirdId ? `/ho-so-chim/${sampleBirdId}` : "/ho-so-chim";
   return (
     <section className="mx-4 lg:mx-8 mt-4 lg:mt-6 mb-6 lg:mb-8">
 
@@ -55,7 +56,7 @@ export default function HeroSection() {
               Khám phá <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              href="/ho-so-chim/bird-001"
+              href={sampleHref}
               className="flex items-center gap-1.5 bg-white text-text-primary font-semibold px-4 py-3 rounded-xl border border-border hover:bg-accent transition-all active:scale-95 text-sm"
             >
               <Play className="w-4 h-4 text-primary-500" />
@@ -118,7 +119,7 @@ export default function HeroSection() {
                 Khám phá ngay <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/ho-so-chim/bird-001"
+                href={sampleHref}
                 className="inline-flex items-center gap-2 bg-white text-text-primary font-semibold px-6 py-3 rounded-xl border border-border hover:bg-accent transition-all active:scale-95"
               >
                 <Play className="w-4 h-4 text-primary-500" />

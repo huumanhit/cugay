@@ -1,12 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, Calendar, MapPin } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import HeroSection from "@/components/home/HeroSection";
-import StatsSection from "@/components/home/StatsSection";
 import BirdCard from "@/components/birds/BirdCard";
 import { getFeaturedBirds, getLatestNews, getSiteStats } from "@/lib/db";
 import { MOCK_EVENTS } from "@/lib/mock-data";
 import { timeAgo } from "@/lib/utils";
-import Image from "next/image";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Trang chủ – CuGay.vn" };
@@ -22,7 +20,7 @@ export default async function HomePage() {
 
   return (
     <div className="animate-fade-in">
-      <HeroSection />
+      <HeroSection sampleBirdId={featuredBirds[0]?.id} />
 
       {/* Stats từ database thật */}
       <section className="px-4 lg:px-8 mb-8">
