@@ -1,4 +1,4 @@
-import { PrismaClient, VoiceType, TimelineType, EventType } from "../src/generated/prisma";
+import { PrismaClient, VoiceType, TimelineType } from "../src/generated/prisma";
 
 const prisma = new PrismaClient();
 
@@ -264,13 +264,7 @@ async function main() {
     { name: "CLB Cu Gáy Đà Nẵng", province: "Đà Nẵng", verified: true },
     { name: "CLB Cu Gáy Sài Gòn", province: "TP. Hồ Chí Minh", verified: true },
   ];
-  for (const club of clubsData) {
-    await prisma.club.upsert({
-      where: { name: club.name } as never,
-      update: {},
-      create: club,
-    });
-  }
+  await prisma.club.createMany({ data: clubsData, skipDuplicates: true });
 
   // News
   await prisma.newsArticle.upsert({
