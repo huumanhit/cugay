@@ -9,13 +9,20 @@ import type {
   Event,
 } from "@/types";
 
+// Ảnh cu gáy (Spotted Dove - Spilopelia chinensis) thật từ Wikimedia Commons
 const BIRD_IMAGES = [
-  "https://images.unsplash.com/photo-1444464666168-49d633b86797?w=600&h=500&fit=crop",
-  "https://images.unsplash.com/photo-1452570053594-1b985d6ea890?w=600&h=500&fit=crop",
-  "https://images.unsplash.com/photo-1548550941-75b8e13fd1d9?w=600&h=500&fit=crop",
-  "https://images.unsplash.com/photo-1570044563948-91e23e36a891?w=600&h=500&fit=crop",
-  "https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=600&h=500&fit=crop",
-  "https://images.unsplash.com/photo-1559561853-08451507cbe7?w=600&h=500&fit=crop",
+  // Cu gáy đậu cành - màu đặc trưng nâu đốm trắng
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Streptopelia_chinensis_-_Ang_Mo_Kio.jpg/800px-Streptopelia_chinensis_-_Ang_Mo_Kio.jpg",
+  // Cu gáy trong tự nhiên - Ấn Độ
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Spotted_dove_on_the_grass_-_Flickr_-_Lip_Kee.jpg/800px-Spotted_dove_on_the_grass_-_Flickr_-_Lip_Kee.jpg",
+  // Cu gáy đứng - góc đẹp
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Spotted_Dove_at_Tennoji_Park.JPG/800px-Spotted_Dove_at_Tennoji_Park.JPG",
+  // Cu gáy cận cảnh - rõ đốm đặc trưng
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Spotted_dove_%28Spilopelia_chinensis%29_Photograph_By_Shantanu_Kuveskar.jpg/800px-Spotted_dove_%28Spilopelia_chinensis%29_Photograph_By_Shantanu_Kuveskar.jpg",
+  // Cu gáy mái nhà - tự nhiên
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Spotted_Dove_I_IMG_8493.jpg/800px-Spotted_Dove_I_IMG_8493.jpg",
+  // Cu gáy đậu nhánh - lông đẹp
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Spotted_dove_%28Spilopelia_chinensis_tigrina%29.jpg/800px-Spotted_dove_%28Spilopelia_chinensis_tigrina%29.jpg",
 ];
 
 const AVATARS = [
