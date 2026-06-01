@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Bird, ShoppingBag, Users, User } from "lucide-react";
+import { Home, Bird, PlusCircle, ShoppingBag, Newspaper } from "lucide-react";
 
 const BOTTOM_NAV_ITEMS = [
   { href: "/", label: "Trang chủ", icon: Home },
   { href: "/ho-so-chim", label: "Hồ sơ", icon: Bird },
+  { href: "/dang-tin", label: "Đăng tin", icon: PlusCircle, highlight: true },
   { href: "/cho-chim", label: "Chợ chim", icon: ShoppingBag },
-  { href: "/cong-dong", label: "Cộng đồng", icon: Users },
-  { href: "/cai-dat", label: "Cá nhân", icon: User },
+  { href: "/tin-tuc", label: "Tin tức", icon: Newspaper },
 ];
 
 export default function BottomNav() {
@@ -18,19 +18,21 @@ export default function BottomNav() {
 
   return (
     <>
-      {/* Floating Action Button */}
-      <button
-        className="lg:hidden fixed bottom-20 right-4 z-50 w-14 h-14 bg-primary-500 rounded-full shadow-lg flex items-center justify-center text-white text-2xl font-light hover:bg-primary-600 active:scale-95 transition-all"
-        aria-label="Tạo mới"
-      >
-        +
-      </button>
-
       {/* Bottom Navigation */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border pb-safe">
         <div className="flex items-center justify-around px-2 py-2">
-          {BOTTOM_NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+          {BOTTOM_NAV_ITEMS.map(({ href, label, icon: Icon, highlight }) => {
             const active = pathname === href || (href !== "/" && pathname.startsWith(href));
+            if (highlight) {
+              return (
+                <Link key={href} href={href} className="flex flex-col items-center gap-0.5 px-3 py-1.5 min-w-[56px]">
+                  <div className="w-10 h-7 flex items-center justify-center rounded-full bg-primary-500 shadow-sm">
+                    <Icon className="w-5 h-5 text-white" />
+                  </div>
+                  <span className="text-[10px] font-semibold text-primary-600">{label}</span>
+                </Link>
+              );
+            }
             return (
               <Link
                 key={href}
